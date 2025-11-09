@@ -1,15 +1,17 @@
 {
   "name": "empire-equipment",
   "version": "1.0.0",
-  "private": true,
+  "description": "Empire Equipment iOS App",
+  "main": "index.js",
   "scripts": {
-    "build": "echo 'Build complete'",
-    "serve": "npx serve www"
+    "start": "npx cap serve",
+    "build": "npx cap sync ios"
   },
+  "author": "Empire Studios",
+  "license": "MIT",
   "dependencies": {
     "@capacitor/core": "^6.0.0",
     "@capacitor/cli": "^6.0.0",
-    "@capacitor/ios": "^6.0.0",
+    "@capacitor/ios": "^6.0.0"
   }
 }
-
