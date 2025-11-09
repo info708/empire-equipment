@@ -1,48 +1,63 @@
-document.addEventListener("DOMContentLoaded", async ()=>{
+document.addEventListener("DOMContentLoaded", () => {
   const emailInput = document.getElementById("emailInput");
   const continueBtn = document.getElementById("continueBtn");
   const welcome = document.getElementById("welcomeScreen");
   const scan = document.getElementById("scanScreen");
-  const result = document.getElementById("result");
-
-  const savedEmail = localStorage.getItem("empireEmail");
-  if(savedEmail){
-    welcome.style.display="none";
-    scan.style.display="block";
-    startCamera();
-  }
-
-  continueBtn.addEventListener("click", ()=>{
-    const email = emailInput.value.trim();
-    if(!email){ alert("Enter your email"); return; }
-    localStorage.setItem("empireEmail", email);
-    welcome.style.display="none";
-    scan.style.display="block";
-    startCamera();
-  });
+  const video = document.getElementById("cameraPreview");
+  const container = document.getElementById("videoContainer");
 
   let stream = null;
 
-  async function startCamera(){
-    const video = document.getElementById("cameraPreview");
-    const container = document.getElementById("videoContainer");
+  async function startCamera() {
     try {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
+        video: { facingMode: { ideal: "environment" } },
         audio: false
       });
       video.srcObject = stream;
       container.style.display = "flex";
-      result.textContent = "Camera ready";
-    } catch(err) {
-      alert("Camera permission required. Please enable camera in settings.");
+    } catch (err) {
+      alert("Camera access denied or unavailable: " + err.message);
     }
   }
 
-  function stopCamera(){
-    if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
-    document.getElementById("videoContainer").style.display="none";
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+    }
+    container.style.display = "none";
   }
 
+  async function initCameraAuto() {
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true });
+      await startCamera();
+    } catch (err) {
+      console.warn("Waiting for user to grant permission...");
+    }
+  }
+
+  continueBtn.addEventListener("click", () => {
+    const email = emailInput.value.trim();
+    if (!email) {
+      alert("Enter your email first.");
+      return;
+    }
+    localStorage.setItem("empireEmail", email);
+    welcome.style.display = "none";
+    scan.style.display = "block";
+    initCameraAuto(); // Auto camera after Continue
+  });
+
+  document.getElementById("startScan").addEventListener("click", startCamera);
   document.getElementById("stopScan").addEventListener("click", stopCamera);
+
+  // Auto-skip welcome if returning user
+  const savedEmail = localStorage.getItem("empireEmail");
+  if (savedEmail) {
+    welcome.style.display = "none";
+    scan.style.display = "block";
+    initCameraAuto();
+  }
 });
