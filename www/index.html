@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0820"/>
+<title>Empire Equipment</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="js/main.js" defer></script>
+
+<style>
+:root{--brand1:#7c4dff;--brand2:#5ee7ff;--bg:#0a0820;--text:#f4f6ff;}
+body{margin:0;font-family:Inter,sans-serif;background:var(--bg);color:var(--text);}
+h1.hero{font-size:28px;font-weight:900;text-align:center;margin-top:20px;
+background:linear-gradient(90deg,var(--brand1),var(--brand2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.version{color:#a6b0ff;text-align:center;font-size:13px;margin-bottom:20px;}
+.btn{display:block;margin:20px auto;padding:12px 22px;border-radius:999px;font-weight:700;color:#fff;
+background:linear-gradient(90deg,#5ee7ff,#7c4dff);border:none;cursor:pointer;}
+#videoContainer{display:none;justify-content:center;}
+video{width:100%;max-width:400px;border:2px solid #5ee7ff;border-radius:12px;}
+</style>
+</head>
+
+<body>
+<h1 class="hero">Build. Scan. Deploy.</h1>
+<p class="version">Empire Equipment v1.0</p>
+
+<div id="welcomeScreen">
+  <h2 style="text-align:center;">Welcome</h2>
+  <p style="text-align:center;">Enter your email to continue</p>
+  <input type="email" id="emailInput" placeholder="you@empire-schools.com"
+    style="display:block;margin:10px auto;padding:10px;border-radius:8px;width:90%;">
+  <button class="btn" id="continueBtn">Continue</button>
+</div>
+
+<div id="scanScreen" style="display:none;text-align:center;">
+  <div id="videoContainer"><video id="cameraPreview" autoplay playsinline></video></div>
+  <button class="btn" id="stopScan" style="background:#444;">Stop</button>
+  <div id="result"></div>
+</div>
+</body>
+</html>

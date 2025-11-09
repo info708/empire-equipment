@@ -1,0 +1,11 @@
+{
+  "appId": "com.empire.studios",
+  "appName": "Empire Equipment",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "MLKitBarcodeScanner": {
+      "supportedFormats": ["QR_CODE"]
+    }
+  }
+}
