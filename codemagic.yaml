@@ -6,10 +6,11 @@ workflows:
       node: latest
       cocoapods: default
     scripts:
-      - name: Install dependencies
-        script: |
-          npm install
-          npx cap sync ios
+     - name: Install dependencies
+  script: |
+    npm install
+    npx cap add ios || true
+    npx cap sync ios
       - name: Build iOS
         script: |
           cd ios
@@ -20,3 +21,4 @@ workflows:
       email:
         recipients:
           - info@empire-schools.com
+
