@@ -4,8 +4,12 @@
   "webDir": "www",
   "bundledWebRuntime": false,
   "plugins": {
-    "MLKitBarcodeScanner": {
-      "supportedFormats": ["QR_CODE"]
+    "Capacitor": {
+      "permissions": {
+        "camera": {
+          "description": "This app requires camera access to scan equipment barcodes."
+        }
+      }
     }
   }
 }
