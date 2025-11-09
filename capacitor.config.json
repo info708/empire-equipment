@@ -2,7 +2,6 @@
   "appId": "com.empire.studios",
   "appName": "Empire Equipment",
   "webDir": "www",
-  "bundledWebRuntime": false,
   "plugins": {
     "Capacitor": {
       "permissions": {
@@ -13,3 +12,4 @@
     }
   }
 }
+
