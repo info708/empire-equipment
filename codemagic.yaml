@@ -2,23 +2,28 @@ workflows:
   ios-build:
     name: Empire Equipment iOS
     environment:
+      vars:
+        BUILD_TYPE: release
       xcode: latest
       node: latest
       cocoapods: default
     scripts:
-     - name: Install dependencies
-  script: |
-    npm install
-    npx cap add ios || true
-    npx cap sync ios
+      - name: Install dependencies
+        script: |
+          npm install
+          npx cap add ios || true
+          npx cap sync ios
       - name: Build iOS
         script: |
           cd ios
-          xcodebuild -workspace App/App.xcworkspace -scheme App -sdk iphoneos -configuration Release archive -archivePath $CM_BUILD_DIR/App.xcarchive
+          xcodebuild -workspace App/App.xcworkspace -scheme App -sdk iphoneos -configuration Release archive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive
+          xcodebuild -exportArchive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive -exportPath $CM_BUILD_DIR/ios_output -exportOptionsPlist App/exportOptions.plist
     artifacts:
-      - ios/App/build/Release-iphoneos/*.ipa
+      - ios_output/*.ipa
     publishing:
       email:
         recipients:
           - info@empire-schools.com
-
+        notify:
+          success: true
+          failure: true
