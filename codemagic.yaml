@@ -9,6 +9,7 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
+          npx cap add ios || echo "iOS platform already exists"
           npx cap sync ios
 
       - name: Build iOS app (Unsigned)
