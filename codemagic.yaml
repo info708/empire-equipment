@@ -1,45 +1,45 @@
 workflows:
   ios-build:
-    name: Empire Equipment iOS
+    name: Empire Equipment iOS (Unsigned)
     environment:
-      vars:
-        BUILD_TYPE: release
       xcode: latest
       node: latest
       cocoapods: default
-
     scripts:
       - name: Install dependencies
         script: |
-          echo "Installing dependencies..."
           npm install
-          npx cap add ios || true
           npx cap sync ios
 
-      - name: Inject camera permission into Info.plist
+      - name: Build iOS app (Unsigned)
         script: |
-          echo "Adding NSCameraUsageDescription to Info.plist..."
-          /usr/libexec/PlistBuddy -c 'Add :NSCameraUsageDescription string "Empire Equipment needs access to your camera to scan equipment barcodes."' ios/App/App/Info.plist || echo "Permission already exists"
-
-      - name: Build iOS app
-        script: |
-          echo "Building iOS app..."
           cd ios
-          xcodebuild \
-            -workspace App/App.xcworkspace \
+          xcodebuild -workspace App/App.xcworkspace \
             -scheme App \
             -sdk iphoneos \
             -configuration Release \
-            archive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive
+            archive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-          echo "Exporting .ipa..."
+      - name: Export unsigned .ipa
+        script: |
+          mkdir -p $CM_BUILD_DIR/unsigned_ipa
           xcodebuild -exportArchive \
             -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive \
-            -exportPath $CM_BUILD_DIR/ios_output \
-            -exportOptionsPlist App/exportOptions.plist
+            -exportPath $CM_BUILD_DIR/unsigned_ipa \
+            -exportOptionsPlist <(echo '<?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+            "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+              <key>method</key><string>ad-hoc</string>
+              <key>signingStyle</key><string>manual</string>
+              <key>compileBitcode</key><false/>
+            </dict>
+            </plist>')
 
     artifacts:
-      - ios_output/*.ipa
+      - $CM_BUILD_DIR/unsigned_ipa/*.ipa
 
     publishing:
       email:
