@@ -1,41 +1,24 @@
 workflows:
-  ios-build:
-    name: Empire Equipment iOS (Unsigned)
+  android-build:
+    name: Empire Equipment Android (Fire Tablet Ready)
     environment:
-      xcode: latest
       node: latest
-      cocoapods: default
+      java: 17
     scripts:
       - name: Install dependencies
         script: |
           npm install
-          npx cap add ios || echo "iOS platform already exists"
-          npx cap sync ios
+          npx cap add android || echo "Android platform already exists"
+          npx cap sync android
 
-      - name: Build iOS app (Unsigned)
+      - name: Build Android APK
         script: |
-          cd ios
-          xcodebuild -workspace App/App.xcworkspace \
-            -scheme App \
-            -sdk iphoneos \
-            -configuration Release \
-            archive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
-
-      - name: Package app manually (skip exportArchive)
-        script: |
-          mkdir -p $CM_BUILD_DIR/unsigned_ipa
-          cd $CM_BUILD_DIR/EmpireEquipment.xcarchive/Products/Applications
-          appname=$(ls | grep ".app$")
-          echo "Zipping $appname into unsigned IPA..."
-          cd ..
-          mkdir Payload
-          mv Applications/$appname Payload/
-          zip -r $CM_BUILD_DIR/unsigned_ipa/EmpireEquipment-unsigned.ipa Payload
-          echo "✅ Unsigned .ipa created at: $CM_BUILD_DIR/unsigned_ipa/EmpireEquipment-unsigned.ipa"
+          cd android
+          ./gradlew assembleDebug
+          echo "✅ Android APK built successfully."
 
     artifacts:
-      - $CM_BUILD_DIR/unsigned_ipa/*.ipa
+      - android/app/build/outputs/**/*.apk
 
     publishing:
       email:
