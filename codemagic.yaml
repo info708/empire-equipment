@@ -24,20 +24,25 @@ workflows:
 
       - name: Export unsigned .ipa
         script: |
+          cd ios/App
+          cat <<EOF > exportOptions.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>ad-hoc</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>compileBitcode</key><false/>
+          </dict>
+          </plist>
+          EOF
+
+          cd ../..
           mkdir -p $CM_BUILD_DIR/unsigned_ipa
           xcodebuild -exportArchive \
             -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive \
             -exportPath $CM_BUILD_DIR/unsigned_ipa \
-            -exportOptionsPlist <(echo '<?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-            "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-            <dict>
-              <key>method</key><string>ad-hoc</string>
-              <key>signingStyle</key><string>manual</string>
-              <key>compileBitcode</key><false/>
-            </dict>
-            </plist>')
+            -exportOptionsPlist ios/App/exportOptions.plist
 
     artifacts:
       - $CM_BUILD_DIR/unsigned_ipa/*.ipa
