@@ -1,7 +1,7 @@
 {
   "appId": "com.empire.studios",
   "appName": "Empire Equipment",
-  "webDir": "www"
+  "webDir": "www",
   "plugins": {
     "Capacitor": {
       "permissions": {
@@ -12,5 +12,6 @@
     }
   }
 }
+
 
 
