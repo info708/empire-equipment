@@ -5,7 +5,6 @@ workflows:
       xcode: latest
       node: latest
       cocoapods: default
-
     scripts:
       - name: Install dependencies
         script: |
@@ -21,32 +20,19 @@ workflows:
             -sdk iphoneos \
             -configuration Release \
             archive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM="" PROVISIONING_PROFILE_SPECIFIER=""
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-      - name: Export unsigned .ipa
+      - name: Package app manually (skip exportArchive)
         script: |
-          cd ios/App
-          cat <<EOF > exportOptions.plist
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key><string>release-testing</string>
-            <key>signingStyle</key><string>manual</string>
-            <key>uploadSymbols</key><false/>
-            <key>compileBitcode</key><false/>
-            <key>stripSwiftSymbols</key><true/>
-          </dict>
-          </plist>
-          EOF
-
-          cd ../..
           mkdir -p $CM_BUILD_DIR/unsigned_ipa
-          xcodebuild -exportArchive \
-            -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive \
-            -exportPath $CM_BUILD_DIR/unsigned_ipa \
-            -exportOptionsPlist ios/App/exportOptions.plist \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM=""
+          cd $CM_BUILD_DIR/EmpireEquipment.xcarchive/Products/Applications
+          appname=$(ls | grep ".app$")
+          echo "Zipping $appname into unsigned IPA..."
+          cd ..
+          mkdir Payload
+          mv Applications/$appname Payload/
+          zip -r $CM_BUILD_DIR/unsigned_ipa/EmpireEquipment-unsigned.ipa Payload
+          echo "✅ Unsigned .ipa created at: $CM_BUILD_DIR/unsigned_ipa/EmpireEquipment-unsigned.ipa"
 
     artifacts:
       - $CM_BUILD_DIR/unsigned_ipa/*.ipa
