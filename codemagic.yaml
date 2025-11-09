@@ -7,19 +7,40 @@ workflows:
       xcode: latest
       node: latest
       cocoapods: default
+
     scripts:
       - name: Install dependencies
         script: |
+          echo "Installing dependencies..."
           npm install
           npx cap add ios || true
           npx cap sync ios
-      - name: Build iOS
+
+      - name: Inject camera permission into Info.plist
         script: |
+          echo "Adding NSCameraUsageDescription to Info.plist..."
+          /usr/libexec/PlistBuddy -c 'Add :NSCameraUsageDescription string "Empire Equipment needs access to your camera to scan equipment barcodes."' ios/App/App/Info.plist || echo "Permission already exists"
+
+      - name: Build iOS app
+        script: |
+          echo "Building iOS app..."
           cd ios
-          xcodebuild -workspace App/App.xcworkspace -scheme App -sdk iphoneos -configuration Release archive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive
-          xcodebuild -exportArchive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive -exportPath $CM_BUILD_DIR/ios_output -exportOptionsPlist App/exportOptions.plist
+          xcodebuild \
+            -workspace App/App.xcworkspace \
+            -scheme App \
+            -sdk iphoneos \
+            -configuration Release \
+            archive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive
+
+          echo "Exporting .ipa..."
+          xcodebuild -exportArchive \
+            -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive \
+            -exportPath $CM_BUILD_DIR/ios_output \
+            -exportOptionsPlist App/exportOptions.plist
+
     artifacts:
       - ios_output/*.ipa
+
     publishing:
       email:
         recipients:
