@@ -5,6 +5,7 @@ workflows:
       xcode: latest
       node: latest
       cocoapods: default
+
     scripts:
       - name: Install dependencies
         script: |
@@ -20,7 +21,7 @@ workflows:
             -sdk iphoneos \
             -configuration Release \
             archive -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM="" PROVISIONING_PROFILE_SPECIFIER=""
 
       - name: Export unsigned .ipa
         script: |
@@ -30,9 +31,11 @@ workflows:
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
-            <key>method</key><string>ad-hoc</string>
+            <key>method</key><string>release-testing</string>
             <key>signingStyle</key><string>manual</string>
+            <key>uploadSymbols</key><false/>
             <key>compileBitcode</key><false/>
+            <key>stripSwiftSymbols</key><true/>
           </dict>
           </plist>
           EOF
@@ -42,7 +45,8 @@ workflows:
           xcodebuild -exportArchive \
             -archivePath $CM_BUILD_DIR/EmpireEquipment.xcarchive \
             -exportPath $CM_BUILD_DIR/unsigned_ipa \
-            -exportOptionsPlist ios/App/exportOptions.plist
+            -exportOptionsPlist ios/App/exportOptions.plist \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO DEVELOPMENT_TEAM=""
 
     artifacts:
       - $CM_BUILD_DIR/unsigned_ipa/*.ipa
